@@ -1,0 +1,12 @@
+/* You can add global styles to this file, and also import other style files */
+.background{
+    background-color:aqua;
+    background-image: url("assets/Images/bg.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.myClass{
+    margin-top:30px!important;
+}

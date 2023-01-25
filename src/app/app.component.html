@@ -1,0 +1,200 @@
+<div>
+  <div *ngIf="alertMessage" class="alert alert-warning">
+    <h1 style="color:darkblue">Welcome to WeatheR forcast</h1>
+    <mat-form-field>
+      <mat-label>Enter Your Name</mat-label>
+      <input matInput id="userName" type="text" style="width:100%;color:black"/>
+    </mat-form-field>
+    <button class="btn btn-success" (click)="attempts()">Okay</button>
+    <h2 style="color:darkblue">WeatheR forcast provides below features. In your Area.</h2>
+    <ul style="color:darkblue">
+      <li>Current Weather details</li>
+      <li>Past 16 days Weather details</li>
+      <li>Next 120 Hours Weather details</li>
+      <li>Emergency Alerts</li>
+    </ul>
+  </div>
+  <div id="forOpacity">
+    <div class="box">
+      <div class="side-header">
+        <img src="assets/Images/day.svg">
+        <img src="assets/Images/cloudy.svg">
+        <img src="assets/Images/thunder.svg">
+      </div>
+      <div class="box-header">
+        Forecast WeatheR 
+        <img src="assets/Images/allWeathersymbol.svg">
+      </div>
+      <div class="right-header">
+        Hi {{userName}}
+      </div>
+    </div>
+    <div class="generic-info" *ngIf="currentWeather">
+      <div class="info">City Name:{{currentWeather["city_name"]}}</div>
+      <div class="info">Country Code:{{currentWeather["country_code"]}}</div>
+      <div class="info">Time Zone:{{currentWeather["timezone"]}}</div>
+    </div>
+    <div class="container">
+      <div class="preference">
+        <div><button class="btn btn-primary" (click)="getLantitude()">Get Latitude&Longitude</button></div>
+        <div >
+          <form [formGroup]="Preference">
+            <mat-form-field>
+              <mat-label >Select Your Preference</mat-label>
+              <mat-select formControlName="Preference"  #weather (selectionChange)="weatherPreference(weather.value)" disableOptionCentering panelClass="myClass">
+                <mat-option  value="current">Current Weather</mat-option>
+                <mat-option value="forecast/daily">Daily Weather</mat-option>
+                <mat-option value="forecast/hourly">Hourly Weather</mat-option>
+                <mat-option value="alerts">Weather Alters</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </form>
+    
+        </div>
+      </div>
+      <form [formGroup]="longlatitude">
+        <div class="input-group">
+          <input type="number" placeholder="latitude" class="form-control" formControlName="Latitude" >
+          <input type="number" placeholder="latitude" class="form-control" formControlName="Longitude" >
+        </div>
+      </form>
+    </div>
+    
+    <div class="content" >
+      <div *ngIf="!dailyFlag&&!hourlyFlag&&!currentFlag&&!alertFlag"  style="margin-left:100px"> 
+        <div *ngIf="image!='error'" class="content-body">Please click on "Get Latitude&Longitude button" to get Current Weather. </div>
+        <div *ngIf="image=='error'" class="content-body">No of Attempts Exceeded to get data from API. Please try Tommorrow</div>
+        <div *ngIf="(currentWeather==undefined || null)||(image=='error')"><img class="initialImage" src="assets/Images/weather-news.png"></div>
+      </div>
+    </div>
+    
+    <div class="container" *ngIf="currentFlag">
+      <div class="card">
+        <img class="card-image" [src]=image>
+        <div class="card-body">
+          <div class="card-title">{{day}}</div>
+          <div class="card-subtitle">{{currentWeather.temp}}&#x2103;</div>
+        </div>
+      </div>
+      <div class="card card-2">
+        <div><img src="assets/Images/feels-like.svg"><div class="font">feels like</div><div class="font">{{currentWeather.app_temp}}&#x2103;</div></div>
+        <div><img src="assets/Images/air-1.png"><div class="font">air quality</div><div class="font">{{currentWeather.aqi}}<span>(aqi)</span></div></div>
+        <div><img src="assets/Images/cloudy.svg"><div class="font">cloud coverage</div><div class="font">{{currentWeather.clouds}}(%)</div></div>
+        <div><img src="assets/Images/rainy-7.svg"><div class="font">precip</div><div class="font">{{currentWeather.precip}}(mm/hr)</div></div>
+        <div><img src="assets/Images/pressure.png"><div class="font">press</div><div class="font">{{currentWeather.pres}}(mb)</div></div>
+        <div><img src="assets/Images/day.svg"><div class="font">humidity</div><div class="font">{{currentWeather.rh}}(%)</div></div>
+        <div><img src="assets/Images/air-1.png"><div class="font">wind speed</div><div class="font">{{windSpeed}}(m/s)</div></div>
+        <div><img src="assets/Images/wind-direction.png"><div class="font">wind direction</div><div class="font">{{currentWeather.wind_cdir_full}}</div></div>
+    
+      </div>
+    </div>
+    
+    <div *ngIf="dailyFlag">
+      <div class="content-body">Past 16 Days Weather Forcast Details</div>
+      <div class="dailyContainer" >
+        <div class="card daily-card" *ngFor="let item of dailyWeatherObject" >
+          <div class="card-header-1">{{item.datetime}}</div>
+          <div><img src="assets/Images/day.svg"><div>Avg Temp</div><div >{{item.temp}}&#x2103;</div></div>
+          <div><img src="assets/Images/cloudy.svg"><div >Avg Clouds</div><div >{{item.clouds}}(%)</div></div>
+          <div class="card-header-1"><img src="assets/Images/rainy-7.svg"><div  >Precip</div><div >{{item.precip}}(mm)</div></div>
+          <div><img src="assets/Images/pressure.png"><div >Pressure</div><div >{{item.pres}}(mb)</div></div>    
+          <div><img src="assets/Images/snowy-6.svg"><div>Snow</div><div >{{item.snow}}(mm)</div></div>
+          <div class="card-header-1"><img src="assets/Images/eyes.png"><div  >Visibility</div><div >{{item.vis}}</div></div>
+          <div><img src="assets/Images/air-1.png"><div >Wind Speed</div><div >{{item.wind_spd}}(m/s)</div></div>
+        </div>
+      </div>
+    </div>
+    
+    <div *ngIf="hourlyFlag" style="padding:20px;">
+      <div class="content-body">Next 120 Hours Weather Forcast Details</div>
+      <table class="table" mat-table [dataSource]="dataSource" class="mat-elevation-z8" multiTemplateDataRows>
+        <ng-container matColumnDef="Temparature">
+          <th mat-header-cell *matHeaderCellDef>Temparature</th>
+          <td mat-cell *matCellDef="let element">{{element.temp}}</td>
+        </ng-container>
+        <ng-container matColumnDef="Clouds">
+          <th mat-header-cell *matHeaderCellDef>Clouds</th>
+          <td mat-cell *matCellDef="let element">{{element.clouds}}(%)</td>
+        </ng-container>
+        <ng-container matColumnDef="Precipitation">
+          <th mat-header-cell *matHeaderCellDef>Precipitation</th>
+          <td mat-cell *matCellDef="let element">{{element.precip}}(mm)</td>
+        </ng-container>
+        <ng-container matColumnDef="Pressure">
+          <th mat-header-cell *matHeaderCellDef>Pressure</th>
+          <td mat-cell *matCellDef="let element">{{element.pres}}(mb)</td>
+        </ng-container>
+        <ng-container matColumnDef="Humidity">
+          <th mat-header-cell *matHeaderCellDef>Humidity</th>
+          <td mat-cell *matCellDef="let element">{{element.rh}}(%)</td>
+        </ng-container>
+        <ng-container matColumnDef="Snow">
+          <th mat-header-cell *matHeaderCellDef>Snow</th>
+          <td mat-cell *matCellDef="let element">{{element.snow}}(mm)</td>
+        </ng-container>
+        <ng-container matColumnDef="Time(H)">
+          <th mat-header-cell *matHeaderCellDef>Time(H)</th>
+          <td mat-cell *matCellDef="let element">{{element.day}}-{{element.time}}</td>
+        </ng-container>
+        <ng-container matColumnDef="Visibility">
+          <th mat-header-cell *matHeaderCellDef>Visibility</th>
+          <td mat-cell *matCellDef="let element">{{element.vis}}</td>
+        </ng-container>
+    
+        <ng-container matColumnDef="expandDetails">
+          <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
+            <div class="example-element-detail" [@detailExpand]="element==expandedElement?'expanded':'collapsed'">
+              <div class="example-element-description">
+                <div class="element-header">
+                  <div class="element-cell" *ngFor="let key of getKey(element.weather)">{{key|titlecase}}</div>
+                </div>
+                <div class="element-content">
+                  <div *ngFor="let value of getValues(element.weather)">
+                    <div *ngIf="checkImage(value)==false"><div  class="element-cell">{{value}}</div></div>
+                    <div *ngIf="checkImage(value)==true"><img style="width:60px" [src]="value"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+    
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row;columns :displayedColumns;" class="element-row"></tr>
+        <tr mat-row *matRowDef="let element; columns:['expandDetails']" class="element-detail-row"></tr>
+    
+        <ng-container matColumnDef="More Details">
+          <th mat-header-cell *matHeaderCellDef>More Details</th>
+          <td mat-cell *matCellDef="let element;let i=dataIndex">
+            <button mat-button [id]="i"  (click)="expandedElement=expandedElement===element?null:element">+</button>
+          </td>
+        </ng-container>
+      </table>
+      <mat-paginator length=100  showFirstLastButtons="true" [pageSizeOptions]="[5, 10, 15,20,25,30,35,40,45,50,55,60,65,70,75,80,85]">
+      </mat-paginator>
+    </div>
+
+    <div class="emergency" *ngIf="alertFlag">
+      <div class="card card-alert" *ngIf="emergencyAlert.length>0">
+        <div class="card-header" style="font-weight:bolder;font-size: xx-large;text-align:center;padding:20px;background-color: cornflowerblue;">Emergency Weather Alert</div>
+        <div class="card-title"  style="font-weight:bold;font-size: medium;padding:15px;border-bottom:1px solid black;">
+          {{emergencyAlert[0].title}}
+        </div>
+        <div class="alert-body" >
+          <div><div class="font" >Starts At</div><span>{{emergencyAlert[0].effective_local}}</span></div>
+          <div><div class="font">Ends At</div><span>{{emergencyAlert[0].expires_local}}</span></div>
+          <div><div class="font">severity</div><span>{{emergencyAlert[0].severity}}</span></div>
+          <div><div class="font">Regions</div><span>{{emergencyAlert[0].regions[0]}}</span></div>
+        </div>
+        <div class="card-footer">
+          Description :-
+          {{emergencyAlert[0].description}}
+        </div>
+      </div>
+      <div *ngIf="alertFlag&&emergencyAlert.length<=0"><img src="assets/Images/happy.png"/>
+        <div class="font">Thank God!! No Emergency Alerts in Your Area..</div>
+      </div>
+    </div>
+  </div>
+</div>
+
