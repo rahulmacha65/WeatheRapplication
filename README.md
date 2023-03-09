@@ -1,4 +1,4 @@
-# WeatherApplication
+# WeatheRApplication
 
 WeatheRapplication will provides the Weather Forcast Information
 
